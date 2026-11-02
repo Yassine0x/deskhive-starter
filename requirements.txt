@@ -1,0 +1,6 @@
+# Tested on CPython 3.12.14 for Windows. No DRF/jQuery in sections 1-2.
+asgiref==3.13.0
+Django==5.2.18
+setuptools==84.2.1
+sqlparse==0.6.1
+tzdata==2026.6

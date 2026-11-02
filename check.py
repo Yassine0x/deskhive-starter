@@ -1,0 +1,38 @@
+"""Run the appropriate DeskHive checks from any working directory."""
+import argparse
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+IS_STARTER = (ROOT / 'deskhive-web/spaces/smoke_tests.py').exists()
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    mode = parser.add_mutually_exclusive_group()
+    for flag in ('smoke', 'all', 'web', 'core', 'lab'):
+        mode.add_argument('--' + flag, action='store_true')
+    args = parser.parse_args()
+    chosen = next((flag for flag in ('smoke', 'all', 'web', 'core', 'lab') if getattr(args, flag)),
+                  'smoke' if IS_STARTER else 'all')
+    if chosen == 'smoke' and not IS_STARTER:
+        parser.error('--smoke is only for the untouched starter; use --all for the solution')
+    jobs = {
+        'smoke': [('deskhive-web', ['manage.py', 'test', 'spaces.smoke_tests', '-v', '2']),
+                  ('deskhive-core', ['-m', 'unittest', '-v', 'smoke_tests'])],
+        'web': [('deskhive-web', ['manage.py', 'test', 'spaces', '-v', '2'])],
+        'core': [('deskhive-core', ['-m', 'unittest', 'discover', '-s', 'tests', '-v'])],
+        'lab': [('deskhive-lab1', ['-m', 'unittest', '-v', 'test_booking.py'])],
+    }
+    jobs['all'] = jobs['web'] + jobs['core']
+    failed = False
+    for folder, command in jobs[chosen]:
+        print(f"\nChecking {folder}: {' '.join(command)}", flush=True)
+        result = subprocess.run([sys.executable, *command], cwd=ROOT / folder)
+        failed = failed or result.returncode != 0
+    if failed and IS_STARTER and chosen != 'smoke':
+        print('Acceptance failures are expected until the starter exercises are completed.', flush=True)
+    return int(failed)
+
+if __name__ == '__main__':
+    raise SystemExit(main())
