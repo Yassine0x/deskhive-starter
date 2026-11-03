@@ -66,7 +66,7 @@ Edit `deskhive-core/deskhive_core/booking.py` in place. Tests are in `deskhive-c
 2. Pricing truncates to whole hours instead of rounding up to half hours.
 3. Duration validation was disabled, so invalid intervals are accepted.
 
-Run that booking file, inspect it with pdb or your IDE, and use `check.py --rules` from the repository root to run its tests. The acceptance tests provide normal, boundary and exception cases. Add a small reproduction or regression test of your own for each defect before changing the implementation. Follow red, green, refactor; do not change expected values to accommodate a bug. Retain warning logging for rejected intervals. See WINDOWS.md for the commands and pdb controls.
+Run that booking file, inspect it with pdb or your IDE, and use `check.py --rules` from the repository root to run its tests. The acceptance tests provide normal, boundary and exception cases. Record a small reproduction for each defect before changing the implementation. Optional extension: add your own regression tests while retaining the supplied assertions. Follow red, green, refactor; do not change expected values to accommodate a bug. Retain warning logging for rejected intervals. See WINDOWS.md for the commands and pdb controls.
 
 Expected after correction: 19 supplied booking rules tests pass; your extra tests should pass too. An invalid interval raises InvalidBookingError and a back-to-back pair does not conflict. No Django server is needed.
 
@@ -101,15 +101,33 @@ macOS equivalents, from the repository root:
 
 Expected: version 0.1.0, all 19 rule tests green, quote EUR 30.00. The same corrected file is reused by SQLite. Commit this milestone; do not repair another copy of the rules.
 
-### E Complete SQLite operations
+### E Required classroom task: update a SQLite rate
 
-Edit `deskhive-core/deskhive_core/db.py`. Read its schema, Space/Booking dataclasses and supplied methods. This file already creates and reads a real SQLite database. Finish only its three marked methods:
+Edit `deskhive-core/deskhive_core/db.py`. Read its schema, Space/Booking dataclasses and supplied methods. This file already creates and reads a real SQLite database. There are three marked methods; **only update_hourly_rate is required during the classroom day**:
 
-1. update_hourly_rate: validate the rate, run a parameterized UPDATE in a transaction and return whether a row matched.
-2. add_booking: validate the interval/email/space, check existing bookings with overlaps, raise BookingConflictError on a conflict, otherwise insert and return the generated ID. Commit or roll back coherently; see the transaction contract.
-3. cancel_booking: delete by ID and return whether a row existed. Cancellation physically removes the row in this prototype.
+1. Required — update_hourly_rate: validate with the supplied positive_rate helper before SQL, run a parameterized UPDATE in a transaction and return whether a row matched. An unchanged rate on an existing row returns True; an unknown space returns False.
+2. Optional extension (45–75 minutes for both methods) — add_booking: validate the interval/email/space, acquire BEGIN IMMEDIATE before conflict checks, raise BookingConflictError on a conflict, otherwise insert and return the generated ID. Commit or roll back coherently; see the transaction contract.
+3. Optional extension — cancel_booking: delete by ID and return whether a row existed. Cancellation physically removes the row in this prototype.
 
 Never concatenate input into SQL. Preserve the supplied connection's row_factory and foreign-key setting. Close the repository explicitly when finished. Explain why a connection transaction context does not close it.
+
+Required verification, starting from the repository root, Windows PowerShell:
+
+~~~powershell
+Push-Location .\deskhive-core
+& ..\.venv\Scripts\python.exe -m unittest -v tests.test_db.DatabaseTests.test_update_rate_persists tests.test_db.DatabaseTests.test_invalid_rate_does_not_change_row
+Pop-Location
+~~~
+
+macOS Terminal, starting from the repository root:
+
+~~~bash
+cd deskhive-core
+../.venv/bin/python -m unittest -v tests.test_db.DatabaseTests.test_update_rate_persists tests.test_db.DatabaseTests.test_invalid_rate_does_not_change_row
+cd ..
+~~~
+
+Expected: both targeted tests pass. The full core suite may remain red while optional add_booking and cancel_booking are unfinished. The following full checks and seed apply after completing that extension:
 
 ~~~powershell
 Push-Location .\deskhive-core
@@ -126,6 +144,6 @@ Use a new --database path if a previous seed file exists. See WINDOWS.md for ins
 
 ## Submit
 
-Submit Web views/routes, the corrected rules in deskhive-core/deskhive_core/booking.py, installed package source, tests you added, repository methods and a README of commands and debugging observations. Include a screenshot of a Web success/404 and captured passing test summaries. Include meaningful local Git commits if required by your trainer. Exclude .venv, caches, egg-info and database files; the seed is how another person reproduces the data.
+Submit the completed Web views in deskhive-web/spaces/views.py, corrected rules in deskhive-core/deskhive_core/booking.py, the rate update in deskhive-core/deskhive_core/db.py, and commands and debugging observations. Keep supplied routes, helpers and tests unchanged. Include any optional tests or repository methods you completed, a Web success/404 observation and captured passing test summaries. Include meaningful local Git commits if required by your trainer. Exclude .venv, caches, egg-info and database files; the seed is how another person reproduces the data after completing the optional database work.
 
-The final check is the 14 Web tests and 42 package tests. The 19 booking rules tests are a subset of the 42 core tests, not another implementation. Do not implement templates, forms, Django business models, DRF, AJAX or XML here.
+Classroom success means 14 Web tests, 19 booking-rule tests and the two targeted rate-update tests pass. After all optional database work, the final full check is 14 Web tests and 42 package tests (56 total). The 19 booking rules tests and two targeted rate-update tests are subsets of the 42 core tests. Do not implement templates, forms, Django business models, DRF, AJAX or XML here.
