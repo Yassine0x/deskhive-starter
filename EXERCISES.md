@@ -1,12 +1,12 @@
 # DeskHive learner starter
 
-DeskHive is a fictional coworking company in Lyon, Lille and Barcelona. You will first build its public Django pages, then debug and package its hourly booking rules and practise SQLite CRUD. This is the order of the first two sections in your LMS.
+DeskHive is a fictional coworking company in Lyon, Lille and Barcelona. You will first build its public Django pages, then debug its hourly booking rules, inspect their package and practise SQLite CRUD. This is the order of the first two sections in your LMS.
 
 This is a deliberately incomplete starter, not the final application. The home page runs immediately. Four unfinished public views return **501**, making missing work visible without crashing the server. Section 2 contains exactly the three booking bugs described in your original lab, plus three clearly marked repository TODO methods. See CONTRACT.md for every required behaviour and WINDOWS.md for PowerShell commands.
 
 ## Install and prove the starter runs
 
-From this folder, containing requirements.txt and the three exercise directories:
+From this folder, containing requirements.txt and the deskhive-web and deskhive-core directories:
 
 ~~~powershell
 py -3.12 -m venv .venv
@@ -58,37 +58,52 @@ Use curl.exe and browser Network tools as shown in WINDOWS.md. Check 200, 404, 4
 
 ## Section 2 Debugging, Databases and Project Skeletons
 
-### C Debug the standalone rules first
+### C Fix the existing booking rules once
 
-Work in deskhive-lab1. Read CONTRACT.md before fixing code. There are exactly three planted rule defects:
+Edit `deskhive-core/deskhive_core/booking.py` in place. Tests are in `deskhive-core/tests/test_booking.py`. Read CONTRACT.md before fixing code. There are exactly three planted rule defects:
 
 1. Adjacent reservations are incorrectly considered conflicts.
 2. Pricing truncates to whole hours instead of rounding up to half hours.
 3. Duration validation was disabled, so invalid intervals are accepted.
 
-Run booking.py, inspect it with pdb or your IDE, and run test_booking.py. The acceptance tests provide normal, boundary and exception cases. Add a small reproduction or regression test of your own for each defect before changing the implementation. Follow red, green, refactor; do not change expected values to accommodate a bug. Retain warning logging for rejected intervals. See WINDOWS.md for the commands and pdb controls.
+Run that booking file, inspect it with pdb or your IDE, and use `check.py --rules` from the repository root to run its tests. The acceptance tests provide normal, boundary and exception cases. Add a small reproduction or regression test of your own for each defect before changing the implementation. Follow red, green, refactor; do not change expected values to accommodate a bug. Retain warning logging for rejected intervals. See WINDOWS.md for the commands and pdb controls.
 
-Expected after correction: 19 supplied standalone tests pass; your extra tests should pass too. An invalid interval raises InvalidBookingError and a back-to-back pair does not conflict. No Django server is needed.
+Expected after correction: 19 supplied booking rules tests pass; your extra tests should pass too. An invalid interval raises InvalidBookingError and a back-to-back pair does not conflict. No Django server is needed.
 
-### D Move the corrected code into an installable skeleton
+### D Understand and verify the existing package
 
-Inspect deskhive-core/pyproject.toml, __init__.py with version 0.1.0, bin, docs and tests. This recovery skeleton is already provided; you may recreate it in a new folder for the original skeleton exercise. Move the corrected standalone implementation into the package, using the same filenames:
+The skeleton is already supplied. Inspect these exact files without moving or duplicating booking.py:
+
+- `deskhive-core/pyproject.toml`: project name/version, Python requirement and setuptools backend.
+- `deskhive-core/deskhive_core/__init__.py`: version 0.1.0.
+- `deskhive-core/deskhive_core/booking.py`: the rules you have just fixed.
+- `deskhive-core/tests/test_booking.py`: tests importing that same module.
+- `deskhive-core/bin/price_quote.py`: a consumer of the installed package.
+- `deskhive-core/docs/README.md`: skeleton notes.
+
+Explain the role of each directory and the difference between distribution name deskhive-core and import name deskhive_core. From the repository root:
 
 ~~~powershell
-Copy-Item -LiteralPath .\deskhive-lab1\booking.py -Destination .\deskhive-core\deskhive_core\booking.py
 & .\.venv\Scripts\python.exe -m pip install --no-build-isolation -e .\deskhive-core
 & .\.venv\Scripts\python.exe -c "import deskhive_core; print(deskhive_core.__version__)"
-Push-Location .\deskhive-core
-& ..\.venv\Scripts\python.exe -m unittest -v tests.test_booking
-& ..\.venv\Scripts\python.exe bin/price_quote.py
-Pop-Location
+& .\.venv\Scripts\python.exe check.py --rules
+& .\.venv\Scripts\python.exe .\deskhive-core\bin\price_quote.py
 ~~~
 
-Expected: version 0.1.0, all rule tests green, quote EUR 30.00. The packaged test file is supplied with its imports already adapted. If copying your own standalone test file, change `from booking import ...` to `from deskhive_core.booking import ...`, and update any assertLogs target from `booking` to `deskhive_core.booking`. This is the same rule implementation, not a second pricing system. Commit the package milestone.
+macOS equivalents, from the repository root:
+
+~~~bash
+./.venv/bin/python -m pip install --no-build-isolation -e ./deskhive-core
+./.venv/bin/python -c "import deskhive_core; print(deskhive_core.__version__)"
+./.venv/bin/python check.py --rules
+./.venv/bin/python deskhive-core/bin/price_quote.py
+~~~
+
+Expected: version 0.1.0, all 19 rule tests green, quote EUR 30.00. The same corrected file is reused by SQLite. Commit this milestone; do not repair another copy of the rules.
 
 ### E Complete SQLite operations
 
-Read the schema, Space/Booking dataclasses and supplied methods in deskhive_core/db.py. This file already creates and reads a real SQLite database. Finish only its three marked methods:
+Edit `deskhive-core/deskhive_core/db.py`. Read its schema, Space/Booking dataclasses and supplied methods. This file already creates and reads a real SQLite database. Finish only its three marked methods:
 
 1. update_hourly_rate: validate the rate, run a parameterized UPDATE in a transaction and return whether a row matched.
 2. add_booking: validate the interval/email/space, check existing bookings with overlaps, raise BookingConflictError on a conflict, otherwise insert and return the generated ID. Commit or roll back coherently; see the transaction contract.
@@ -111,6 +126,6 @@ Use a new --database path if a previous seed file exists. See WINDOWS.md for ins
 
 ## Submit
 
-Submit Web views/routes, corrected standalone rules, installed package source, tests you added, repository methods and a README of commands and debugging observations. Include a screenshot of a Web success/404 and captured passing test summaries. Include meaningful local Git commits if required by your trainer. Exclude .venv, caches, egg-info and database files; the seed is how another person reproduces the data.
+Submit Web views/routes, the corrected rules in deskhive-core/deskhive_core/booking.py, installed package source, tests you added, repository methods and a README of commands and debugging observations. Include a screenshot of a Web success/404 and captured passing test summaries. Include meaningful local Git commits if required by your trainer. Exclude .venv, caches, egg-info and database files; the seed is how another person reproduces the data.
 
-The final check is the 14 Web tests and 42 package tests. The 19 standalone rule tests repeat part of the package coverage rather than adding a new rule set. Do not implement templates, forms, Django business models, DRF, AJAX or XML here.
+The final check is the 14 Web tests and 42 package tests. The 19 booking rules tests are a subset of the 42 core tests, not another implementation. Do not implement templates, forms, Django business models, DRF, AJAX or XML here.

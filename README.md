@@ -26,7 +26,7 @@ git clone URL_DU_DEPOT deskhive-starter
 cd deskhive-starter
 ~~~
 
-If you already have this folder locally, open a terminal in it and skip cloning. You must see requirements.txt, check.py and the three deskhive-* folders. All installation commands below start from this repository root.
+If you already have this folder locally, open a terminal in it and skip cloning. You must see requirements.txt, check.py and the deskhive-web and deskhive-core folders. All installation commands below start from this repository root.
 
 ## 3 Install on Windows PowerShell
 
@@ -90,32 +90,20 @@ Run these commands from the repository root in a second terminal, or after stopp
 |---|---|---|
 | Untouched starter preflight | `& .\.venv\Scripts\python.exe check.py --smoke` | `./.venv/bin/python check.py --smoke` |
 | Web acceptance | `& .\.venv\Scripts\python.exe check.py --web` | `./.venv/bin/python check.py --web` |
-| Standalone debugging tests | `& .\.venv\Scripts\python.exe check.py --lab` | `./.venv/bin/python check.py --lab` |
+| Booking rules tests | `& .\.venv\Scripts\python.exe check.py --rules` | `./.venv/bin/python check.py --rules` |
 | Packaged rules and SQLite tests | `& .\.venv\Scripts\python.exe check.py --core` | `./.venv/bin/python check.py --core` |
 | All acceptance tests | `& .\.venv\Scripts\python.exe check.py --all` | `./.venv/bin/python check.py --all` |
-| Debug standalone code | `& .\.venv\Scripts\python.exe -m pdb .\deskhive-lab1\booking.py` | `./.venv/bin/python -m pdb deskhive-lab1/booking.py` |
+| Debug booking rules | `& .\.venv\Scripts\python.exe -m pdb .\deskhive-core\deskhive_core\booking.py` | `./.venv/bin/python -m pdb deskhive-core/deskhive_core/booking.py` |
 | Price quote | `& .\.venv\Scripts\python.exe .\deskhive-core\bin\price_quote.py` | `./.venv/bin/python deskhive-core/bin/price_quote.py` |
 | Seed a NEW database | `& .\.venv\Scripts\python.exe .\deskhive-core\bin\seed_db.py` | `./.venv/bin/python deskhive-core/bin/seed_db.py` |
 
 Before completion: rule tests fail for the three planted defects; DB tests raise NotImplementedError for three methods. The quote is wrong and the seed cannot complete until the relevant tasks are fixed. The --smoke checks assert the original 501 starter state; use --all, not --smoke, to validate completed work. The CI workflow intentionally checks only --smoke for this original distribution; change its command to --all in your own completed submission.
 
-The seed refuses to overwrite an existing file. Choose another target, for example append `--database deskhive-core/demo-2.db` to the root-level seed command. Keep all three project folders together: the seed reads the single catalogue at deskhive-web/spaces/data.py using a path relative to its own file.
+The seed refuses to overwrite an existing file. Choose another target, for example append `--database deskhive-core/demo-2.db` to the root-level seed command. Keep deskhive-web and deskhive-core together: the seed reads the single catalogue at deskhive-web/spaces/data.py using a path relative to its own file.
 
-After fixing the standalone booking file, copy that SAME implementation into the package:
+Edit only `deskhive-core/deskhive_core/booking.py` for the three booking fixes. Its tests live in `deskhive-core/tests/test_booking.py`. The existing package is the single source of booking rules: fix it once, then use it for the packaging and SQLite exercises. No file needs to be copied or moved.
 
-Windows, from repository root:
-
-~~~powershell
-Copy-Item -LiteralPath .\deskhive-lab1\booking.py -Destination .\deskhive-core\deskhive_core\booking.py
-~~~
-
-macOS, from repository root:
-
-~~~bash
-cp deskhive-lab1/booking.py deskhive-core/deskhive_core/booking.py
-~~~
-
-The packaged tests already use the correct import path. Read [CONTRACT.md](CONTRACT.md) before changing signatures, fields, URL names or rules. The full assignment steps are in [EXERCISES.md](EXERCISES.md); its longer command examples use PowerShell, while the equivalents for macOS are all given above.
+Read [CONTRACT.md](CONTRACT.md) before changing signatures, fields, URL names or rules. The full assignment steps are in [EXERCISES.md](EXERCISES.md); its longer command examples use PowerShell, while the equivalents for macOS are all given above.
 
 ## 7 Continue your work on another computer
 

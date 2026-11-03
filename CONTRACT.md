@@ -25,7 +25,7 @@ JSON shape: `{"code":"lyo","city":"Lyon","address":"...","spaces":[{"name":"Lyon
 - `compute_price(hourly_rate, start, end) -> Decimal`: validate interval and positive finite rate; ceil duration to next half hour, then round price to cents HALF_UP. Prefer rates as decimal strings, Decimal or integers. Examples: 90 min at 20 -> 30.00; 31 min at 20 -> 20.00; 2.5 h at 12 -> 30.00.
 - Invalid rates raise ValueError. Rejected intervals and database conflicts log warnings. `BookingConflictError` is raised by the repository when a valid interval overlaps another booking for the same space.
 
-The standalone `deskhive-lab1/booking.py` is the first debugging checkpoint. After fixing it, move that same implementation into `deskhive_core/booking.py`; do not maintain two different rule sets. Provided standalone tests import `booking`; packaged tests import `deskhive_core.booking` and use its corresponding logging name.
+The only booking implementation is `deskhive-core/deskhive_core/booking.py`. Fix the three defects there once. Its tests are `deskhive-core/tests/test_booking.py`, importing `deskhive_core.booking`. The packaging and SQLite exercises reuse that same file; there is no copy or move step. Run `check.py --rules` to check only these 19 rules tests.
 
 ## Section 2 SQLite repository
 

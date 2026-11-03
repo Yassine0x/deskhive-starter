@@ -10,10 +10,10 @@ IS_STARTER = (ROOT / 'deskhive-web/spaces/smoke_tests.py').exists()
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
-    for flag in ('smoke', 'all', 'web', 'core', 'lab'):
+    for flag in ('smoke', 'all', 'web', 'core', 'rules'):
         mode.add_argument('--' + flag, action='store_true')
     args = parser.parse_args()
-    chosen = next((flag for flag in ('smoke', 'all', 'web', 'core', 'lab') if getattr(args, flag)),
+    chosen = next((flag for flag in ('smoke', 'all', 'web', 'core', 'rules') if getattr(args, flag)),
                   'smoke' if IS_STARTER else 'all')
     if chosen == 'smoke' and not IS_STARTER:
         parser.error('--smoke is only for the untouched starter; use --all for the solution')
@@ -22,7 +22,7 @@ def main():
                   ('deskhive-core', ['-m', 'unittest', '-v', 'smoke_tests'])],
         'web': [('deskhive-web', ['manage.py', 'test', 'spaces', '-v', '2'])],
         'core': [('deskhive-core', ['-m', 'unittest', 'discover', '-s', 'tests', '-v'])],
-        'lab': [('deskhive-lab1', ['-m', 'unittest', '-v', 'test_booking.py'])],
+        'rules': [('deskhive-core', ['-m', 'unittest', '-v', 'tests.test_booking'])],
     }
     jobs['all'] = jobs['web'] + jobs['core']
     failed = False

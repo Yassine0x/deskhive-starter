@@ -1,6 +1,6 @@
 # Windows PowerShell commands
 
-Run commands from this pack's root, the folder containing deskhive-web, deskhive-core and deskhive-lab1. Extract the complete pack first. Python 3.12 must already be installed. No virtual environment activation or PowerShell execution-policy change is needed.
+Run commands from this pack's root, the folder containing deskhive-web and deskhive-core. Clone the complete repository first. Python 3.12 must already be installed. No virtual environment activation or PowerShell execution-policy change is needed.
 
 ## Install once
 
@@ -42,13 +42,13 @@ Pop-Location
 
 If port 8000 is occupied, run on 8001 and change the URLs above accordingly. Only Django's generated internal apps need the initial migrations; no custom business migrations should be created here.
 
-## Section 2 first debugging checkpoint
+## Section 2 debug the existing booking rules
 
 ~~~powershell
-Push-Location .\deskhive-lab1
-& ..\.venv\Scripts\python.exe booking.py
-& ..\.venv\Scripts\python.exe -m unittest -v test_booking.py
-& ..\.venv\Scripts\python.exe -m pdb booking.py
+Push-Location .\deskhive-core
+& ..\.venv\Scripts\python.exe deskhive_core/booking.py
+& ..\.venv\Scripts\python.exe -m unittest -v tests.test_booking
+& ..\.venv\Scripts\python.exe -m pdb deskhive_core/booking.py
 ~~~
 
 In pdb: n steps over, s steps into, p expression inspects, l lists source, w shows the stack, c continues and q quits. After you fix the three planted bugs, the demo should print 30.00, False and a rejected invalid interval. Its initial output is deliberately incorrect. After leaving pdb:
@@ -57,7 +57,7 @@ In pdb: n steps over, s steps into, p expression inspects, l lists source, w sho
 Pop-Location
 ~~~
 
-## Section 2 package and SQLite
+## Section 2 inspect the package and continue with SQLite
 
 ~~~powershell
 Push-Location .\deskhive-core
