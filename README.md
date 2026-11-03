@@ -117,15 +117,15 @@ cp deskhive-lab1/booking.py deskhive-core/deskhive_core/booking.py
 
 The packaged tests already use the correct import path. Read [CONTRACT.md](CONTRACT.md) before changing signatures, fields, URL names or rules. The full assignment steps are in [EXERCISES.md](EXERCISES.md); its longer command examples use PowerShell, while the equivalents for macOS are all given above.
 
-## 7 Use another laptop tomorrow
+## 7 Continue your work on another computer
 
-1. Commit and push your source changes from the current computer.
-2. On the laptop, install Git and Python 3.12, clone the same repository, then repeat section 3 or 4. This is a NEW venv on the laptop.
-3. Run the verification command and migrate, then start the site using section 5.
-4. If you need example bookings, run the seed on the laptop. Database files are intentionally not transferred by Git.
-5. Before travelling or going offline, complete the first dependency installation and test the site on that laptop.
+If you save your work in your own Git repository, commit and push the changes you want to transfer. On the other computer, clone that repository and follow the Windows or macOS installation steps above.
 
-For later work, stop the server, commit or stash your local edits before `git pull --ff-only`, then reinstall requirements if they changed. A private solution repository requires GitHub access on the laptop as well. Keep each repository's venv separate: both install the distribution named deskhive-core.
+Create a new virtual environment on each computer. Git transfers source code, not the installed dependencies or local SQLite databases. Run Django's migrations again. Once you have completed the SQLite exercise, you can also run the seed script to recreate its example data.
+
+Use the checks appropriate to your progress: --smoke applies only to the untouched starter; --web and --core check the corresponding exercises; --all validates the completed project. Incomplete exercises are expected to fail their acceptance tests.
+
+Before pulling changes into an existing clone, stop the server and commit or stash your local edits. Reinstall dependencies if requirements.txt has changed.
 
 ## 8 Troubleshooting
 
@@ -140,4 +140,4 @@ For later work, stop the server, commit or stash your local edits before `git pu
 
 ## Repository contents and portability
 
-Only source, documentation and pinned dependencies are tracked. .gitignore excludes .venv, caches, database files, .DS_Store and local IDE state. No path to the author's workstation is required. The lock has been executed on Windows/Python 3.12; a GitHub Actions matrix is included for Windows and macOS after publication. No macOS run is claimed before that workflow actually executes.
+Only source, documentation and pinned dependencies are tracked. .gitignore excludes .venv, caches, database files, .DS_Store and local IDE state. The included GitHub Actions workflow checks the original starter on Windows and macOS; its results are available in the repository's Actions tab.

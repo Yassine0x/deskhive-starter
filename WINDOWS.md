@@ -12,7 +12,7 @@ py -3.12 -m venv .venv
 & .\.venv\Scripts\python.exe -c "import deskhive_core; print(deskhive_core.__version__)"
 ~~~
 
-Expected package version: 0.1.0. setuptools is in requirements.txt; --no-build-isolation reuses that tested build backend. This is still an editable installation. Each pack needs its own venv, because learner and instructor packages have the same distribution name. Do not install both into the same teaching environment.
+Expected package version: 0.1.0. setuptools is in requirements.txt; --no-build-isolation reuses that build backend. This is still an editable installation. Use this project's own virtual environment for every command.
 
 ## Section 1
 
@@ -51,7 +51,7 @@ Push-Location .\deskhive-lab1
 & ..\.venv\Scripts\python.exe -m pdb booking.py
 ~~~
 
-In pdb: n steps over, s steps into, p expression inspects, l lists source, w shows the stack, c continues and q quits. The instructor demo prints 30.00, False and a rejected invalid interval. The learner file deliberately behaves differently before repair. After leaving pdb:
+In pdb: n steps over, s steps into, p expression inspects, l lists source, w shows the stack, c continues and q quits. After you fix the three planted bugs, the demo should print 30.00, False and a rejected invalid interval. Its initial output is deliberately incorrect. After leaving pdb:
 
 ~~~powershell
 Pop-Location
