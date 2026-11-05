@@ -1,3 +1,11 @@
+# M5 checkpoint
+
+See [M5-README.md](M5-README.md) and [M5-EXERCISES.md](M5-EXERCISES.md) for the active branch. Historical sections below describe earlier modules.
+
+# Active branch: M4 — Templates and Forms
+
+Start with [M4-README.md](M4-README.md) and [M4-EXERCISES.md](M4-EXERCISES.md). The M1/M2 instructions below are historical for this branch.
+
 # deskhive-starter
 
 Student starting point: the home page works, four unfinished views return 501, and the booking/SQLite exercises deliberately contain bugs and TODOs.

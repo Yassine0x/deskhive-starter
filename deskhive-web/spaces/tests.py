@@ -1,18 +1,18 @@
 from unittest.mock import patch
-from django.test import Client, SimpleTestCase
+from django.test import Client, TestCase
 from django.urls import resolve, reverse
 from .data import LOCATIONS
 from .views import AboutView
 
 
-class PublicPagesTests(SimpleTestCase):
-    """Prohibit DB access: section 1 must work with in-memory data alone."""
+class PublicPagesTests(TestCase):
+    """M5 preserves the M1 catalogue HTTP contract using persisted data."""
 
     def test_home_has_reversed_navigation(self):
         response = self.client.get(reverse("spaces:home"))
         self.assertContains(response, "DeskHive")
         self.assertContains(response, f'href="{reverse("spaces:location_list")}"')
-        self.assertContains(response, "does not accept bookings yet")
+        self.assertContains(response, "manage persistent bookings")
 
     def test_list_includes_every_location(self):
         response = self.client.get(reverse("spaces:location_list"))
@@ -77,8 +77,10 @@ class PublicPagesTests(SimpleTestCase):
 
     def test_catalogue_values_are_html_escaped(self):
         location = {"city": '<script>alert("x")</script>', "address": "A & B", "spaces": []}
-        with patch.dict(LOCATIONS, {"test": location}):
-            response = self.client.get("/locations/test/")
+        from .models import Location
+        Location.objects.create(code="tst", city=location["city"], address=location["address"])
+        if True:
+            response = self.client.get("/locations/tst/")
         self.assertContains(response, "&lt;script&gt;")
         self.assertNotContains(response, "<script>")
 

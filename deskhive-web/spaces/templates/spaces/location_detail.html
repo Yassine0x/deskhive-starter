@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ location.city }} · {{ block.super }}{% endblock %}
+{% block content %}
+<h1>DeskHive {{ location.city }}</h1>
+<p>{{ location.address }}</p>
+<p>{{ location.spaces|length }} space{{ location.spaces|length|pluralize }}</p>
+<ul>
+{% for space in location.spaces %}
+  <li>{{ space.name }} — {{ space.kind }} — capacity {{ space.capacity }} — EUR {{ space.hourly_rate }}/hour</li>
+{% empty %}<li>No spaces available.</li>{% endfor %}
+</ul>
+<p><a href="{% url 'spaces:location_summary' code=code %}">JSON summary</a></p>
+{% endblock %}

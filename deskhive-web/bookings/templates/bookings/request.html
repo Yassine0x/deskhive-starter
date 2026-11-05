@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Booking request · {{ block.super }}{% endblock %}
+{% block content %}
+<h1>Booking request</h1>
+<p>Demonstration only: no space is reserved and availability is not checked.</p>
+<p>Enter local Europe/Paris dates and times. Duration: more than zero, at most 12 hours.
+Clock-change intervals are not supported.</p>
+<form method="post" action="{% url 'bookings:request' %}" novalidate>
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  {% for field in form %}{% include "partials/form_field.html" %}{% endfor %}
+  <button type="submit">Validate request</button>
+</form>
+{% endblock %}

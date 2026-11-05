@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Locations · {{ block.super }}{% endblock %}
+{% block content %}
+<h1>DeskHive locations</h1>
+<ul>
+{% for code, location in locations.items %}
+  <li><a href="{% url 'spaces:location_detail' code=code %}">{{ location.city }}</a> — {{ location.address }}</li>
+{% empty %}<li>No locations available.</li>{% endfor %}
+</ul>
+{% endblock %}

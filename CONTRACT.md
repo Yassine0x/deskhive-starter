@@ -1,3 +1,11 @@
+# M5 contract update
+
+M5-README.md defines the active ORM, booking and AJAX contracts. The catalogue now uses Django persistence; earlier statements about no DB access apply to M1–M4 only. The M4 request form remains a nonpersistent demonstration.
+
+# M4 branch addendum
+
+[M4-README.md](M4-README.md) defines the template/form additions and the M4 checkpoint. The contracts below remain the M1/M2 reference; direct HTML is now rendered through templates.
+
 # DeskHive sections 1 and 2 contract
 
 DeskHive is a fictional coworking network in Lyon, Lille and Barcelona. This contract applies to both the learner starter and instructor solution. All names are fixed to let the same tests verify both.

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<h1>DeskHive bookings</h1>
+<p>Classroom demo: this list belongs to this browser session. No authentication is implemented.</p>
+<p><a href="{% url 'bookings:create' %}">Book a space</a></p>
+<h2>Spaces</h2>
+{% for space in spaces %}
+<article><h3>{{ space.name }}</h3>
+<button type="button" class="toggle-details" aria-expanded="false" aria-controls="space-{{ space.pk }}">Show details</button>
+<div id="space-{{ space.pk }}" hidden>{{ space.location.city }} · {{ space.kind }} · Capacity {{ space.capacity }} · EUR {{ space.hourly_rate }}/hour</div>
+</article>
+{% empty %}<p>No spaces. Run migrate to load the classroom catalogue.</p>{% endfor %}
+<h2>Your bookings</h2>
+{% for booking in bookings %}
+<article><p>{{ booking.space.name }} · {{ booking.start }} – {{ booking.end }}</p>
+<a href="{% url 'bookings:edit' booking.pk %}">Edit</a>
+<form method="post" action="{% url 'bookings:delete' booking.pk %}">{% csrf_token %}<button>Delete booking</button></form></article>
+{% empty %}<p>No bookings in this session.</p>{% endfor %}
+<script src="{% static 'bookings/jquery-3.7.1.min.js' %}" defer></script>
+<script src="{% static 'bookings/m5.js' %}" defer></script>
+{% endblock %}

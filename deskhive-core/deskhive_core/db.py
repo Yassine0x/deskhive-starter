@@ -120,8 +120,12 @@ class DeskHiveDatabase:
         return [self._space(row) for row in rows]
 
     def update_hourly_rate(self, space_id: int, hourly_rate) -> bool:
-        # TODO section 2: update_hourly_rate; see the documented contract.
-        raise NotImplementedError("Implement update_hourly_rate")
+        rate = positive_rate(hourly_rate)
+        with self.connection:
+            cursor = self.connection.execute(
+                "UPDATE spaces SET hourly_rate = ? WHERE id = ?", (str(rate), space_id)
+            )
+        return cursor.rowcount == 1
 
     def delete_space(self, space_id: int) -> bool:
         """Booked spaces are protected by the FK: raises sqlite3.IntegrityError."""
@@ -136,8 +140,26 @@ class DeskHiveDatabase:
 
     def add_booking(self, space_id: int, member_email: str,
                     start: datetime, end: datetime) -> int:
-        # TODO section 2: add_booking; see the documented contract.
-        raise NotImplementedError("Implement add_booking")
+        validate_booking(start, end)
+        email = nonempty(member_email, "member_email")
+        # A modest input check, NOT the later Django EmailField/form-validation lesson.
+        if email.count("@") != 1 or not all(email.split("@")):
+            raise ValueError("member_email must contain a local part and domain")
+        # Take the writer lock before checking conflicts; rollback on any exception.
+        with self.connection:
+            self.connection.execute("BEGIN IMMEDIATE")
+            if self.get_space(space_id) is None:
+                raise ValueError("Unknown space")
+            for booking in self.list_bookings(space_id):
+                if overlaps(start, end, booking.start, booking.end):
+                    logger.warning("Rejected conflicting booking for space %s", space_id)
+                    raise BookingConflictError("This space is already booked")
+            cursor = self.connection.execute(
+                "INSERT INTO bookings(space_id, member_email, start, end) VALUES (?, ?, ?, ?)",
+                (space_id, email, start.isoformat(timespec="microseconds"),
+                 end.isoformat(timespec="microseconds")),
+            )
+        return cursor.lastrowid
 
     def list_bookings(self, space_id: int) -> list[Booking]:
         rows = self.connection.execute(
@@ -146,5 +168,7 @@ class DeskHiveDatabase:
         return [self._booking(row) for row in rows]
 
     def cancel_booking(self, booking_id: int) -> bool:
-        # TODO section 2: cancel_booking; see the documented contract.
-        raise NotImplementedError("Implement cancel_booking")
+        """In this three-table prototype, cancellation physically deletes the row."""
+        with self.connection:
+            cursor = self.connection.execute("DELETE FROM bookings WHERE id = ?", (booking_id,))
+        return cursor.rowcount == 1

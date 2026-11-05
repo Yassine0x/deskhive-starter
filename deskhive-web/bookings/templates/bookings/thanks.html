@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Request validated · {{ block.super }}{% endblock %}
+{% block content %}
+<h1>Request validated</h1>
+<p>No reservation has been created. This temporary summary expires with your session.</p>
+<dl>
+  <dt>Name</dt><dd>{{ summary.full_name }}</dd>
+  <dt>Email</dt><dd>{{ summary.email }}</dd>
+  <dt>Space</dt><dd>{{ summary.space_name }}</dd>
+  <dt>Start</dt><dd>{{ summary.start }}</dd>
+  <dt>End</dt><dd>{{ summary.end }}</dd>
+</dl>
+<a href="{% url 'bookings:request' %}">New request</a>
+{% endblock %}
