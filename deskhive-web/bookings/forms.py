@@ -21,6 +21,12 @@ class BookingRequestForm(forms.Form):
 
     def clean(self):
         data = super().clean()
-        # TODO M4: guard missing fields, adapt the dates, call validate_booking,
-        # translate InvalidBookingError into forms.ValidationError, return data.
-        raise forms.ValidationError("M4 exercise: complete interval validation before accepting requests.")
+        start, end = data.get("start"), data.get("end")
+        if start is None or end is None:
+            return data
+        local_start, local_end = local_interval(start, end)
+        try:
+            validate_booking(local_start, local_end)
+        except InvalidBookingError as exc:
+            raise forms.ValidationError(str(exc)) from exc
+        return data
