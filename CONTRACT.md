@@ -1,3 +1,7 @@
+# M4 branch addendum
+
+[M4-README.md](M4-README.md) defines the template/form additions and the M4 checkpoint. The contracts below remain the M1/M2 reference; direct HTML is now rendered through templates.
+
 # DeskHive sections 1 and 2 contract
 
 DeskHive is a fictional coworking network in Lyon, Lille and Barcelona. This contract applies to both the learner starter and instructor solution. All names are fixed to let the same tests verify both.

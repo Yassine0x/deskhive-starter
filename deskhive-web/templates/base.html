@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}DeskHive{% endblock %}</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'spaces/site.css' %}">
+</head>
+<body>
+  {% include "partials/navigation.html" %}
+  <main>{% block content %}{% endblock %}</main>
+  <footer>DeskHive · Classroom demonstration</footer>
+</body>
+</html>
