@@ -40,10 +40,7 @@ def booking_edit(request, pk=None):
 @require_POST
 def booking_delete(request, pk):
     booking = get_object_or_404(Booking, pk=pk, pk__in=request.session.get(OWNED, []))
-    try:
-        delete_booking(booking)
-    except ValidationError:
-        return render(request, 'bookings/incomplete.html', status=501)
+    delete_booking(booking)
     request.session[OWNED] = [item for item in request.session.get(OWNED, []) if item != pk]
     return redirect('bookings:manage')
 
@@ -53,5 +50,4 @@ def availability(request):
     form = AvailabilityForm(request.GET)
     if not form.is_valid():
         return JsonResponse({'errors': form.errors.get_json_data()}, status=400)
-    # TODO M5 lab 3: return the boolean result of is_available(**form.cleaned_data).
-    return JsonResponse({'error': 'Complete M5 lab 3: availability endpoint.'}, status=501)
+    return JsonResponse({'available': is_available(**form.cleaned_data)})

@@ -5,16 +5,16 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-IS_STARTER = (ROOT / 'deskhive-web/spaces/smoke_tests.py').exists()
+IS_STARTER = (ROOT / 'M6-EXERCISES.md').exists()
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
-    for flag in ('smoke', 'all', 'web', 'core', 'rules', 'm4', 'm5'):
+    for flag in ('smoke', 'all', 'web', 'core', 'rules', 'm4', 'm5', 'm6-lab1', 'm6'):
         mode.add_argument('--' + flag, action='store_true')
     args = parser.parse_args()
-    chosen = next((flag for flag in ('smoke', 'all', 'web', 'core', 'rules', 'm4', 'm5') if getattr(args, flag)),
-                  'smoke' if IS_STARTER else 'all')
+    chosen = next((flag for flag in ('smoke', 'all', 'web', 'core', 'rules', 'm4', 'm5', 'm6-lab1', 'm6') if getattr(args, flag.replace('-', '_'))),
+                  'm5' if IS_STARTER else 'all')
     if chosen == 'smoke' and not IS_STARTER:
         parser.error('--smoke is only for the untouched starter; use --all for the solution')
     jobs = {
@@ -26,7 +26,9 @@ def main():
     }
     jobs['m4'] = [('deskhive-web', ['manage.py', 'test', 'spaces.tests', 'spaces.test_m4', 'bookings.tests', '-v', '2'])]
     jobs['m5'] = [('deskhive-web', ['manage.py', 'test', 'spaces', 'bookings', '-v', '2'])]
-    jobs['all'] = jobs['web'] + jobs['core']
+    jobs['m6-lab1'] = [('deskhive-web', ['manage.py', 'test', 'api_m6.tests.SerializerBasicsTests', '-v', '2'])]
+    jobs['m6'] = [('deskhive-web', ['manage.py', 'test', 'api_m6.tests', '-v', '2'])]
+    jobs['all'] = jobs['web'] + jobs['m6'] + jobs['core']
     failed = False
     for folder, command in jobs[chosen]:
         print(f"\nChecking {folder}: {' '.join(command)}", flush=True)
